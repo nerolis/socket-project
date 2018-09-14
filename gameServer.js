@@ -1,14 +1,14 @@
-export default class GameSever {
-    constructor(io) {
-        this.init(io)
+import uuidv1 from 'uuid/v1';
+
+export default class GameServer {
+    constructor(io, gameSocket) {
+        this.init(io, gameSocket)
     }
 
-    init(io) {
-        
-        io.on('connection', socket => console.log('Socket inited'));
-
-        setInterval(() => {
-            io.sockets.emit('message', 'hi!');
-        }, 1000);
+    init(io, gameSocket) {
+        gameSocket.emit('connected', {
+            uuid : uuidv1(),
+            date : Date.now()
+        });
     }
 }
