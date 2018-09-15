@@ -7,17 +7,18 @@ class Player {
 }
 
 export default class GameServer {
-    constructor(io, gameSocket) {
-        this.init(io, gameSocket)
+    constructor(io, socket) {
+        this.initEmiters(io, socket);
+        this.initSubsribers(io, socket);
+        this.players = [];
     }
     
-
-    init(io, gameSocket) {
+    initEmiters(io, socket) {
 
         const player = new Player();
-
-        gameSocket.emit('connected', {
-            id    : gameSocket.id,
+        
+        socket.emit('connected', {
+            id    : socket.id,
             date  : Date.now(),
             hp    : player.hp,
             speed : player.speed,
@@ -25,4 +26,23 @@ export default class GameServer {
         });
 
     }
+
+    initSubsribers(io, socket) {
+
+        socket.on('player', player => {
+            this.player(player);
+        })
+
+        socket.on('movement', movement => {
+            console.log(movement);
+        })
+
+    }
+
+    player(data) {
+        console.log(data);
+    }
+
+
+
 }
