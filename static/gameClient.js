@@ -1,6 +1,19 @@
+class World {
+  constructor() {
+    this.canvas  = document.getElementById('canvas');
+    this.initWorld();
+    this.context = this.canvas.getContext('2d');
+  }
+
+  initWorld() {
+    this.canvas.width = 800;
+    this.canvas.height = 600;
+  }
+}
+
+
 class Player {
   constructor(player) {
-
     this.id    = player.id;
     this.name  = player.name;
     this.date  = player.date;
@@ -15,6 +28,7 @@ class Player {
       left  : false,
       right : false
     }
+
   }
   
   keyboard() {
@@ -53,17 +67,21 @@ class Player {
       }
     });
   }
+
 }
 
 
 class Client {
   constructor(socket) {
+    this.world = new World();
     this.initEmiters(socket);
     this.initSubscribers(socket);
     this.player;
   }
 
   initEmiters(socket) {
+    // Send info that there is an player.
+    socket.emit('newPlayer');
 
     setInterval(() => {
       if (this.player) {
@@ -75,9 +93,25 @@ class Client {
 
   initSubscribers(socket) {
     socket.on('connected', playerStats =>  this.player = new Player(playerStats));
+    socket.on('state', players => this.worldState(players));
   }
 
+  worldState(players) {
+    this.world.context.clearRect(0, 0, 800, 600);
+    this.world.context.fillStyle = 'green';
+    
+    for (let id in players) {
+      
+      let player = players[id];
+
+      this.world.context.beginPath();
+      this.world.context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
+      this.world.context.fill();
+    }
+  }
 }
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const socket = io();

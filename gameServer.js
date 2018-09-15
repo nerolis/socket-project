@@ -8,41 +8,54 @@ class Player {
 
 export default class GameServer {
     constructor(io, socket) {
+        this.player  = new Player();
+        this.players = {};
+
         this.initEmiters(io, socket);
-        this.initSubsribers(io, socket);
-        this.players = [];
+        this.initSubscribers(io, socket);
     }
     
     initEmiters(io, socket) {
-
-        const player = new Player();
-        
         socket.emit('connected', {
             id    : socket.id,
             date  : Date.now(),
-            hp    : player.hp,
-            speed : player.speed,
-            name  : player.name
+            hp    : this.player.hp,
+            speed : this.player.speed,
+            name  : this.player.name
         });
 
+        setInterval(() => {
+            io.sockets.emit('state', this.players);
+          }, 1000 / 60);
     }
 
-    initSubsribers(io, socket) {
+    initSubscribers(io, socket) {
+        socket.on('newPlayer', () => this.newPlayer(socket.id));
 
-        socket.on('player', player => {
-            this.player(player);
-        })
-
-        socket.on('movement', movement => {
-            console.log(movement);
-        })
-
+        socket.on('movement', movement => this.playerMovement(movement, socket.id));
     }
 
-    player(data) {
-        console.log(data);
+    newPlayer(id) {
+        this.players[id] = {
+            x: 300,
+            y: 300
+          };
     }
 
+    playerMovement(movement, id) {
 
+        let player = this.players[id] || {};
 
+        if (movement.left) 
+            player.x -= 5;
+        
+        if (movement.up) 
+            player.y -= 5;
+
+        if (movement.right)
+            player.x += 5;
+        
+        if (movement.down)
+            player.y += 5;
+    }
 }
