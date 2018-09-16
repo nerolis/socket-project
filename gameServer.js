@@ -32,14 +32,22 @@ export default class GameServer {
     initSubscribers(io, socket) {
         socket.on('newPlayer', () => this.newPlayer(socket.id));
 
+        socket.on('disconnect', () => this.removePlayer(socket.id));
+            
         socket.on('movement', movement => this.playerMovement(movement, socket.id));
     }
 
     newPlayer(id) {
         this.players[id] = {
-            x: 300,
-            y: 300
+            x        : 300,
+            y        : 300,
+            playerId : id,
           };
+    }
+
+    removePlayer(id) {
+        delete this.players[id];
+        // io.emit('disconnect', socket.id);
     }
 
     playerMovement(movement, id) {
