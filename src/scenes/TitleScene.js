@@ -6,7 +6,7 @@ class TitleScene extends Phaser.Scene {
     }
 
     preload() {
-        console.log(socket);
+        console.log('Init TitleScene')
         this.scene.start('GameScene');
     }
 }

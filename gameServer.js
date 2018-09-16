@@ -1,3 +1,5 @@
+let players = {};
+
 class Player {
     constructor() {
       this.name  = 'Player';
@@ -9,8 +11,6 @@ class Player {
 export default class GameServer {
     constructor(io, socket) {
         this.player  = new Player();
-        this.players = {};
-
         this.initEmiters(io, socket);
         this.initSubscribers(io, socket);
     }
@@ -23,36 +23,45 @@ export default class GameServer {
             speed : this.player.speed,
             name  : this.player.name
         });
-
-        setInterval(() => {
-            io.sockets.emit('state', this.players);
+        
+        setInterval(() => { 
+            socket.emit('state', players);
           }, 1000 / 60);
+          
     }
 
     initSubscribers(io, socket) {
-        socket.on('newPlayer', () => this.newPlayer(socket.id));
+        socket.on('newPlayer', () => {
+            this.newPlayer(socket)
+        });
 
         socket.on('disconnect', () => this.removePlayer(socket.id));
             
         socket.on('movement', movement => this.playerMovement(movement, socket.id));
     }
 
-    newPlayer(id) {
-        this.players[id] = {
-            x        : 300,
-            y        : 300,
-            playerId : id,
-          };
+    newPlayer(socket) {
+
+        players[socket.id] = {
+            rotation    : 0,
+            x           : Math.floor(Math.random() * 700) + 50,
+            y           : Math.floor(Math.random() * 500) + 50,
+            playerId    : socket.id,
+            team        : (Math.floor(Math.random() * 2) == 0) ? 'red' : 'blue'
+        };
+
+        socket.emit('currentPlayers', players);
+        socket.broadcast.emit('newPlayer', players[socket.id]);
     }
 
     removePlayer(id) {
-        delete this.players[id];
-        // io.emit('disconnect', socket.id);
+        //delete players[id];
+        //io.emit('disconnect', socket.id);
     }
 
     playerMovement(movement, id) {
 
-        let player = this.players[id] || {};
+        let player = players[id] || {};
 
         if (movement.left) 
             player.x -= 5;

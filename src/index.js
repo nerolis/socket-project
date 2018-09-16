@@ -5,19 +5,17 @@ import TitleScene  from './scenes/TitleScene';
 import GameScene   from './scenes/GameScene';
 
 const config = {
-    type: Phaser.WEBGL,
-    pixelArt: true,
-    roundPixels: true,
-    parent: 'content',
-    width: 1280,
-    height: 720,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 800 },
-            debug: false
-        }
-    },
+  type: Phaser.AUTO,
+  parent: 'phaser-example',
+  width: 800,
+  height: 600,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      debug: false,
+      gravity: { y: 0 }
+    }
+  },
     scene: [ BootScene, TitleScene, GameScene ]
 };
 
