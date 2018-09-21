@@ -1,11 +1,10 @@
-let players = {};
-
 class World {
     constructor(socket) {
         return 0;
     }
 }
 
+let players = {};
 class Player {
     constructor(socket) {
         this.rotation = 0,
@@ -17,7 +16,7 @@ class Player {
 }
 
 
-export default class GameServer {
+export default class Server {
     constructor(socket) {
         this.initEmiters(socket);
         this.initSubscribers(socket);
