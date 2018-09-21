@@ -15,6 +15,4 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 server.listen(5000, () => console.log('Starting server on port 5000'));
 
 // Entry point.
-io.on('connection', socket => {
-  new GameServer(io, socket);
-});
+io.on('connection', socket => new GameServer(socket));

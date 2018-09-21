@@ -1,5 +1,6 @@
 let players = {};
 
+class World {}
 class Player {
     constructor() {
       this.name  = 'Player';
@@ -8,24 +9,23 @@ class Player {
     }
 }
 
-class World {}
 
 export default class GameServer {
-    constructor(io, socket) {
+    constructor(socket) {
         this.player = new Player();
         this.world  = new World();
 
-        this.initEmiters(io, socket);
-        this.initSubscribers(io, socket);
+        this.initEmiters(socket);
+        this.initSubscribers(socket);
     }
     
-    initEmiters(io, socket) {        
+    initEmiters(socket) {        
         setInterval(() => { 
             socket.emit('state', players);
         }, 1000 / 60);
     }
     
-    initSubscribers(io, socket) {
+    initSubscribers(socket) {
         socket.on('newPlayer', () => this.newPlayer(socket));
         socket.on('disconnect', () => this.removePlayer(socket));
         socket.on('playerMovement', movement => this.playerMovement(movement, socket));
