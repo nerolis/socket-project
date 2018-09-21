@@ -28,7 +28,8 @@ class GameScene extends Phaser.Scene {
             this.addOthersPlayers(self, playerInfo);
         });
 
-        socket.on('disconnect', playerId => {
+        socket.on('playerDisconnect', playerId => {
+            console.log(playerId);
             self.otherPlayers.getChildren().map(otherPlayer => {
               if (playerId === otherPlayer.playerId) {
                 otherPlayer.destroy();
@@ -96,7 +97,7 @@ class GameScene extends Phaser.Scene {
         } else {
             self.ship.setTint(0xff0000);
         }
-        
+
         self.ship.setDrag(100);
         self.ship.setAngularDrag(100);
         self.ship.setMaxVelocity(200);
