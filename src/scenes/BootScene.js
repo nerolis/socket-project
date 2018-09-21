@@ -6,7 +6,6 @@ class BootScene extends Phaser.Scene {
     }
 
     preload() {
-
         const progress = this.add.graphics();
 
         this.load.image('ship', './dist/assets/spaceShips_001.png');

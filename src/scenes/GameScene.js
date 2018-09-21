@@ -5,50 +5,35 @@ class GameScene extends Phaser.Scene {
         super({key: 'GameScene'});
     }
 
+
     preload() {
         socket.emit('newPlayer');
+
+        this.otherPlayers = this.physics.add.group();
+        this.cursors      = this.input.keyboard.createCursorKeys();
     }
 
     create() { 
-        const self = this;
+        
+        socket.on('newPlayer', playerInfo => this.addOtherPlayer(this, playerInfo));
 
-        this.otherPlayers = this.physics.add.group();
+        socket.on('playerDisconnect', playerId => this.otherPlayers.getChildren().map(otherPlayer => playerId === otherPlayer.playerId ? otherPlayer.destroy() : null));
 
-        socket.on('currentPlayers', players => {
-            Object.keys(players).map(id => {
-                if(players[id].playerId === socket.id) {
-                    this.addPlayer(self, players[id]);
-                } else {
-                    this.addOthersPlayers(self, players[id]);
-                }
-            })
-        });
-
-        socket.on('newPlayer', playerInfo => {
-            this.addOthersPlayers(self, playerInfo);
-        });
-
-        socket.on('playerDisconnect', playerId => {
-            console.log(playerId);
-            self.otherPlayers.getChildren().map(otherPlayer => {
-              if (playerId === otherPlayer.playerId) {
-                otherPlayer.destroy();
-              }
-            });
-        });
+        socket.on('currentPlayers', players => Object.keys(players).map(id => players[id].playerId === socket.id ? this.addPlayer(this, players[id]) : this.addOtherPlayer(this, players[id])));
 
         socket.on('playerMoved', playerInfo => {
-            self.otherPlayers.getChildren().map(otherPlayer => {
+            this.otherPlayers.getChildren().map(otherPlayer => {
               if (playerInfo.playerId === otherPlayer.playerId) {
                 otherPlayer.setRotation(playerInfo.rotation);
                 otherPlayer.setPosition(playerInfo.x, playerInfo.y);
               }
             });
-          });        
-
-        this.cursors = this.input.keyboard.createCursorKeys();
+        });        
     }
 
+    /**
+     * @todo refactor
+     */
     update() {
         if (this.ship) {
             if (this.cursors.left.isDown) {
@@ -89,30 +74,33 @@ class GameScene extends Phaser.Scene {
     }
 
 
+    /**
+     * 
+     * @param {{}} self 
+     * @param {{}} playerInfo
+     * @description add player to the map 
+     */
     addPlayer(self, playerInfo) {
         self.ship = self.physics.add.image(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-
-        if (playerInfo.team === 'blue') {
-          self.ship.setTint(0x0000ff);
-        } else {
-            self.ship.setTint(0xff0000);
-        }
-
+        self.ship.setTint(playerInfo.team);
         self.ship.setDrag(100);
         self.ship.setAngularDrag(100);
         self.ship.setMaxVelocity(200);
     }
 
-    addOthersPlayers(self, playerInfo) {
-        const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-
-        if (playerInfo.team === 'blue') {
-          otherPlayer.setTint(0x0000ff);
-        } else {
-            otherPlayer.setTint(0xff0000);
-        }
-
+    /**
+     * @param {{}} self 
+     * @param {{}} playerInfo 
+     * @description addother player to the map
+     */
+    addOtherPlayer(self, playerInfo) {
+        const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer')
+        
+        otherPlayer.setOrigin(0.5, 0.5);
+        otherPlayer.setDisplaySize(53, 40);
+        otherPlayer.setTint(playerInfo.team);
         otherPlayer.playerId = playerInfo.playerId;
+
         self.otherPlayers.add(otherPlayer);
     }
 }
