@@ -1,20 +1,24 @@
 let players = {};
 
-class World {}
+class World {
+    constructor(socket) {
+        return 0;
+    }
+}
+
 class Player {
-    constructor() {
-      this.name  = 'Player';
-      this.speed = 2;
-      this.hp    = 100; 
+    constructor(socket) {
+        this.rotation = 0,
+        this.playerId = socket.id,
+        this.x        = Math.floor(Math.random() * 700) + 50,
+        this.y        = Math.floor(Math.random() * 500) + 50,
+        this.team     = (Math.floor(Math.random() * 2) == 0) ? '0x0000ff' : '0xff0000'
     }
 }
 
 
 export default class GameServer {
     constructor(socket) {
-        this.player = new Player();
-        this.world  = new World();
-
         this.initEmiters(socket);
         this.initSubscribers(socket);
     }
@@ -37,14 +41,7 @@ export default class GameServer {
      * @description создаем игрока, записываем в объект. Эмиттим в клиент. 
      */
     newPlayer(socket) {
-        players[socket.id] = {
-            rotation    : 0,
-            x           : Math.floor(Math.random() * 700) + 50,
-            y           : Math.floor(Math.random() * 500) + 50,
-            playerId    : socket.id,
-            team        : (Math.floor(Math.random() * 2) == 0) ? '0x0000ff' : '0xff0000'
-        };
-
+        players[socket.id] = new Player(socket);
         socket.emit('currentPlayers', players);
         socket.broadcast.emit('newPlayer', players[socket.id]);
     }
