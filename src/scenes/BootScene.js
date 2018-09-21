@@ -6,9 +6,11 @@ class BootScene extends Phaser.Scene {
     }
 
     preload() {
+
         const progress = this.add.graphics();
 
         this.load.image('ship', './dist/assets/spaceShips_001.png');
+        this.load.image('otherPlayer', './dist/assets/spaceShips_001.png');
 
         this.load.on('progress', value => {
             progress.clear();
@@ -17,9 +19,8 @@ class BootScene extends Phaser.Scene {
         });
 
         this.load.on('complete', () => {
-            // prepare all animations, defined in a separate file
             progress.destroy();
-            this.scene.start('TitleScene');
+            this.scene.start('GameScene');
         });
     }
 

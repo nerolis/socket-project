@@ -1,7 +1,5 @@
-import 'phaser';
-
+import Phaser      from 'phaser';
 import BootScene   from './scenes/BootScene';
-import TitleScene  from './scenes/TitleScene';
 import GameScene   from './scenes/GameScene';
 
 const config = {
@@ -16,7 +14,7 @@ const config = {
       gravity: { y: 0 }
     }
   },
-    scene: [ BootScene, TitleScene, GameScene ]
+    scene: [ BootScene, GameScene ]
 };
 
 const game = new Phaser.Game(config);

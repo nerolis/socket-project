@@ -37,7 +37,7 @@ export default class GameServer {
 
         socket.on('disconnect', () => this.removePlayer(socket.id));
             
-        socket.on('movement', movement => this.playerMovement(movement, socket.id));
+        socket.on('playerMovement', movement => this.playerMovement(movement, socket));
     }
 
     newPlayer(socket) {
@@ -59,20 +59,11 @@ export default class GameServer {
         //io.emit('disconnect', socket.id);
     }
 
-    playerMovement(movement, id) {
+    playerMovement(movement, socket) {
 
-        let player = players[id] || {};
-
-        if (movement.left) 
-            player.x -= 5;
-        
-        if (movement.up) 
-            player.y -= 5;
-
-        if (movement.right)
-            player.x += 5;
-        
-        if (movement.down)
-            player.y += 5;
+        players[socket.id].x = movement.x;
+        players[socket.id].y = movement.y;
+        players[socket.id].rotation = movement.rotation;
+        socket.broadcast.emit('playerMoved', players[socket.id]);
     }
 }
