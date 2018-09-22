@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "eslint": "^5.6.0",
     "express": "^4.16.3",
     "phaser": "^3.12.0",
     "socket.io": "^2.1.1"
