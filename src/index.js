@@ -1,5 +1,5 @@
-import Phaser                           from 'phaser';
-import game                             from './game';
+import game                       from './game';
+//----------------------------------------------------
 import React                            from 'react';
 import ReactDOM                         from 'react-dom';
 import { Provider }                     from 'react-redux';
