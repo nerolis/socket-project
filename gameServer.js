@@ -18,53 +18,51 @@ class Player {
 
 export default class Server {
 	constructor(socket) {
-		this.initEmiters(socket);
-		this.initSubscribers(socket);
+		this.socket = socket;
+		this.initEmiters();
+		this.initSubscribers();
 	}
     
-	initEmiters(socket) {        
+	initEmiters() {        
 		setInterval(() => { 
-			socket.emit('state', players);
+			this.socket.emit('state', players);
 		}, 1000 / 60);
 	}
     
-	initSubscribers(socket) {
-		socket.on('newPlayer', () => this.newPlayer(socket));
-		socket.on('disconnect', () => this.removePlayer(socket));
-		socket.on('playerMovement', movement => this.playerMovement(movement, socket));
+	initSubscribers() {
+		this.socket.on('newPlayer', () => this.newPlayer());
+		this.socket.on('disconnect', () => this.removePlayer());
+		this.socket.on('playerMovement', movement => this.playerMovement(movement));
 	}
 
 	/**
      * 
-     * @param {{id: number}} socket
      * @description создаем игрока, записываем в объект. Эмиттим в клиент. 
      */
-	newPlayer(socket) {
-		players[socket.id] = new Player(socket);
-		socket.emit('currentPlayers', players);
-		socket.broadcast.emit('newPlayer', players[socket.id]);
+	newPlayer() {
+		players[this.socket.id] = new Player(this.socket);
+		this.socket.emit('currentPlayers', players);
+		this.socket.broadcast.emit('newPlayer', players[this.socket.id]);
 	}
 
 	/**
      * 
-     * @param {{id: number}} socket 
      * @description удаляем игрока, эммитим событие удаления. Клиент подхватывает и удаляет у себя.
      */
-	removePlayer(socket) {
-		delete players[socket.id];
-		socket.broadcast.emit('playerDisconnect', socket.id);
+	removePlayer() {
+		delete players[this.socket.id];
+		this.socket.broadcast.emit('playerDisconnect', this.socket.id);
 	}
 
 	/**
      * 
      * @param {{x: number, y: number, rotation: number}} movement 
-     * @param {{id: number}} socket 
      * @description получаем от клиента координаты. Отдаем обратно.
      */
-	playerMovement(movement, socket) {
-		players[socket.id].x = movement.x;
-		players[socket.id].y = movement.y;
-		players[socket.id].rotation = movement.rotation;
-		socket.broadcast.emit('playerMoved', players[socket.id]);
+	playerMovement(movement) {
+		players[this.socket.id].x = movement.x;
+		players[this.socket.id].y = movement.y;
+		players[this.socket.id].rotation = movement.rotation;
+		this.socket.broadcast.emit('playerMoved', players[this.socket.id]);
 	}
 }
