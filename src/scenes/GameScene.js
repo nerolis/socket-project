@@ -10,7 +10,7 @@ export default class GameScene extends Phaser.Scene {
 	preload() {
 		socket.emit('newPlayer');
 		this.otherPlayers = this.physics.add.group();
-		this.cursors      = this.input.keyboard.createCursorKeys();
+        this.cursors      = this.input.keyboard.createCursorKeys();
 	}
 
 	create() { 
@@ -39,7 +39,9 @@ export default class GameScene extends Phaser.Scene {
      * @todo refactor
      */
 	update() {
+        console.log(this, 'THIS');
 		if (this.ship) {
+            console.log('hei');
 			if (this.cursors.left.isDown) {
 				this.ship.setAngularVelocity(-150);
 			} else if (this.cursors.right.isDown) {

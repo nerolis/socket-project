@@ -13,6 +13,12 @@
     "eslint": "^5.6.0",
     "express": "^4.16.3",
     "phaser": "^3.12.0",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.3.1",
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0",
     "socket.io": "^2.1.1"
   },
   "devDependencies": {
