@@ -1,32 +1,62 @@
-class World {
-	constructor(socket) {
-		return 0;
-	}
-}
-
 let players = {};
+
 class Player {
 	constructor(socket) {
-		this.rotation = 0,
-		this.playerId = socket.id,
-		this.x        = Math.floor(Math.random() * 700) + 50,
-		this.y        = Math.floor(Math.random() * 500) + 50,
-		this.team     = (Math.floor(Math.random() * 2) == 0) ? '0x0000ff' : '0xff0000';
+		this.socket = socket;
 	}
+
+	/**
+	 * @description генерирует персонажа.
+	 * @returns {{rotation: number, hp: number, speed: number, x: number, y: number, team: string, alive: bool}}
+	 */
+	character() {
+		return {
+			rotation	: 0,
+			hp			: 100,
+			speed		: 2,
+			x			: Math.floor(Math.random() * 700) + 50,
+			y			: Math.floor(Math.random() * 500) + 50,
+			team		: (Math.floor(Math.random() * 2) == 0) ? '0x0000ff' : '0xff0000',
+			alive		: true
+		};
+	}
+
+	/**
+	 * @description удаляет персонажа.
+	 */
+	delete() {
+		delete players[this.socket.id];
+	}
+
+	/**
+	 * 
+     * @param {{x: number, y: number, rotation: number}} movement 
+     * @description записывает передвижение игрока.
+	 */
+	movement(movement) {
+		players[this.socket.id].x 		 = movement.x;
+		players[this.socket.id].y		 = movement.y;
+		players[this.socket.id].rotation = movement.rotation;
+	}
+
 }
 
 
+/**
+ * @todo врап для emit & on
+ */
 export default class Server {
 	constructor(socket) {
 		this.socket = socket;
+		this.player = new Player(this.socket);
 		this.initEmiters();
 		this.initSubscribers();
 	}
-    
+
 	initEmiters() {        
 		setInterval(() => { 
 			this.socket.emit('state', players);
-		}, 1000 / 60);
+		}, 1000 / 60);			
 	}
     
 	initSubscribers() {
@@ -40,7 +70,7 @@ export default class Server {
      * @description создаем игрока, записываем в объект. Эмиттим в клиент. 
      */
 	newPlayer() {
-		players[this.socket.id] = new Player(this.socket);
+		players[this.socket.id] = this.player.character();
 		this.socket.emit('currentPlayers', players);
 		this.socket.broadcast.emit('newPlayer', players[this.socket.id]);
 	}
@@ -50,19 +80,16 @@ export default class Server {
      * @description удаляем игрока, эммитим событие удаления. Клиент подхватывает и удаляет у себя.
      */
 	removePlayer() {
-		delete players[this.socket.id];
+		this.player.delete();
 		this.socket.broadcast.emit('playerDisconnect', this.socket.id);
 	}
 
 	/**
      * 
      * @param {{x: number, y: number, rotation: number}} movement 
-     * @description получаем от клиента координаты. Отдаем обратно.
      */
 	playerMovement(movement) {
-		players[this.socket.id].x = movement.x;
-		players[this.socket.id].y = movement.y;
-		players[this.socket.id].rotation = movement.rotation;
+		this.player.movement(movement);
 		this.socket.broadcast.emit('playerMoved', players[this.socket.id]);
 	}
 }

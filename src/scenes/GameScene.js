@@ -9,7 +9,6 @@ export default class GameScene extends Phaser.Scene {
 
 	preload() {
 		socket.emit('newPlayer');
-
 		this.otherPlayers = this.physics.add.group();
 		this.cursors      = this.input.keyboard.createCursorKeys();
 	}
