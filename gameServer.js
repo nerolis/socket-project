@@ -30,13 +30,12 @@ class Player {
 	}
 
 	/**
-	 * 
          * @param {{x: number, y: number, rotation: number}} movement 
          * @description записывает передвижение игрока.
 	 */
 	movement(movement) {
-		players[this.socket.id].x 		 = movement.x;
-		players[this.socket.id].y		 = movement.y;
+		players[this.socket.id].x	 = movement.x;
+		players[this.socket.id].y	 = movement.y;
 		players[this.socket.id].rotation = movement.rotation;
 	}
 
@@ -67,7 +66,6 @@ export default class Server {
 	}
 
      /**
-     * 
      * @description создаем игрока, записываем в объект. Эмиттим в клиент. 
      */
 	newPlayer() {
@@ -77,7 +75,6 @@ export default class Server {
 	}
 
      /**
-     * 
      * @description удаляем игрока, эммитим событие удаления. Клиент подхватывает и удаляет у себя.
      */
 	removePlayer() {
@@ -86,7 +83,6 @@ export default class Server {
 	}
 
      /**
-     * 
      * @param {{x: number, y: number, rotation: number}} movement 
      */
 	playerMovement(movement) {
