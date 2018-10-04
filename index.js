@@ -2,7 +2,7 @@ import express        from 'express';
 import http           from 'http';
 import path           from 'path';
 import socketIO       from'socket.io';
-import GameServer     from './GameServer';
+import GameServer     from './server/server';
 
 const app    = express(),
       server = http.Server(app),
