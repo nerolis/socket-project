@@ -9,12 +9,12 @@ class Player {
     return {
       playerId 	: this.socket.id,
       rotation	: 0,
-      hp		: 100,
-      speed		: 2,
-      x			: Math.floor(Math.random() * 700) + 50,
-      y			: Math.floor(Math.random() * 500) + 50,
-      team		: (Math.floor(Math.random() * 2) == 0) ? '0x0000ff' : '0xff0000',
-      alive		: true
+      hp	    	: 100,
+      speed	  	: 2,
+      x			    : Math.floor(Math.random() * 700) + 50,
+      y			    : Math.floor(Math.random() * 500) + 50,
+      team	  	: (Math.floor(Math.random() * 2) == 0) ? '0x0000ff' : '0xff0000',
+      alive	  	: true
     };
   }
 
@@ -38,22 +38,22 @@ export default class Server {
   constructor(socket) {
     this.socket = socket;
     this.player = new Player(this.socket);
-    this.initEmiters();
-    this.initSubscribers();
+    this.emiters();
+    this.subscribers();
   }
 
-  initEmiters() {        
+  emiters() {        
     setInterval(() => { 
       this.socket.emit('state', players);
     }, 1000 / 60);			
   }
     
-  initSubscribers() {
+  subscribers() {
     this.socket.on('newPlayer', () => this.newPlayer());
     this.socket.on('disconnect', () => this.removePlayer());
     this.socket.on('playerMovement', movement => this.playerMovement(movement));
   }
-
+  
   newPlayer() {
     players[this.socket.id] = this.player.character();
     this.socket.emit('currentPlayers', players);
@@ -66,7 +66,9 @@ export default class Server {
   }
 
   playerMovement(movement) {
-    this.player.movement(movement);
-    this.socket.broadcast.emit('playerMoved', players[this.socket.id]);
+    if (movement) {
+      this.player.movement(movement);
+      this.socket.broadcast.emit('playerMoved', players[this.socket.id]);
+    }
   }
 }
